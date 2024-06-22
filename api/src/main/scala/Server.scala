@@ -19,6 +19,8 @@ object Server {
       .newServerAt(host, port)
       .bind(Router.route)
 
+    println(s"Server online at http://$host:$port/")
+
     val keepAlive = Promise[Unit].future
     Await.result(keepAlive, Duration.Inf)
 
