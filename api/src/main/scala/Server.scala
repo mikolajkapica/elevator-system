@@ -20,7 +20,7 @@ object Server {
       .newServerAt(host, port)
       .bind(Routes.route)
 
-    Database.test()
+//    Database.test()
 
     Await.result(keepAlive, Duration.Inf)
 
