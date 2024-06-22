@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions: { }
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/api
+
+jobs:
+  test-api:
+    name: Test API
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'api'
+      - run: "find ./api -maxdepth 1 -mindepth 1 -exec mv {} . \\; && rm -r ./api"
+      - uses: coursier/cache-action@v6.3
+      - uses: VirtusLab/scala-cli-setup@v0.1
+      - name: Check for scalafmt conformance
+        run: |
+          scala-cli fmt --check . || (
+          echo "To format code run"
+          echo "  scala-cli fmt ."
+          exit 1
+          )
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: corretto
+          java-version: 21
+          cache: sbt
+      - name: Install sbt
+        run: |
+          sudo apt-get update
+          sudo apt-get install apt-transport-https curl gnupg -yqq
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt_old.list
+          curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo -H gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/scalasbt-release.gpg --import
+          sudo chmod 644 /etc/apt/trusted.gpg.d/scalasbt-release.gpg
+          sudo apt-get update
+          sudo apt-get install sbt
+      - name: Build and Test
+        run: sbt -v +test
+
+  build-api-image:
+    name: Build API Image
+    needs: test-api
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: 'api'
+      - run: "find ./api -maxdepth 1 -mindepth 1 -exec mv {} . \\; && rm -r api"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
