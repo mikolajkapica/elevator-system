@@ -1,0 +1,10 @@
+name: elevator-system
+
+services:
+    api:
+        build:
+            context: .
+        ports:
+            - 8080:8080
+        stdin_open: true
+        tty: true
