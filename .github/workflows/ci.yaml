@@ -28,12 +28,15 @@ jobs:
         with:
           sparse-checkout: 'api'
       - run: "find ./api -maxdepth 1 -mindepth 1 -exec mv {} . \\; && rm -r ./api"
+      - uses: coursier/cache-action@v6.3
+      - uses: VirtusLab/scala-cli-setup@v0.1
       - name: Check for scalafmt conformance
         run: |
-          curl -fL "https://github.com/VirtusLab/coursier-m1/releases/latest/download/cs-aarch64-pc-linux.gz" | gzip -d > cs
-          chmod +x cs
-          cs install scalafmt
-          ./cs scalafmt --check
+          scala-cli fmt --check . || (
+          echo "To format code run"
+          echo "  scala-cli fmt ."
+          exit 1
+          )
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
