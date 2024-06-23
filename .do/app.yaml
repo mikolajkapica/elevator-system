@@ -1,6 +1,12 @@
 alerts:
   - rule: DEPLOYMENT_FAILED
   - rule: DOMAIN_FAILED
+databases:
+  - cluster_name: elevator-system-db
+    engine: MONGODB
+    name: elevator-system-db
+    production: true
+    version: "7"
 features:
   - buildpack-stack=ubuntu-22
 ingress:
@@ -10,24 +16,23 @@ ingress:
       match:
         path:
           prefix: /api
-jobs:
-  - dockerfile_path: api/Dockerfile
-    github:
-      branch: feature/4
-      repo: mikolajkapica/elevator-system
-    instance_count: 1
-    instance_size_slug: apps-s-1vcpu-0.5gb
-    source_dir: api
-name: elevator-system
+name: dolphin-app
 region: fra
 services:
-  - dockerfile_path: api/Dockerfile
+  - dockerfile_path: /api/Dockerfile
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        value: ${elevator-system-db.DATABASE_URL}
+      - key: CA_CERT
+        scope: RUN_TIME
+        value: ${elevator-system-db.CA_CERT}
     github:
       branch: feature/4
+      deploy_on_push: true
       repo: mikolajkapica/elevator-system
     http_port: 8080
-    instance_count: 1
-    instance_size_slug: apps-s-1vcpu-0.5gb
+    instance_count: 2
+    instance_size_slug: apps-s-1vcpu-1gb
     name: elevator-system-api
-    run_command: sbt run
     source_dir: api
