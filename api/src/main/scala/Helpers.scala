@@ -42,7 +42,7 @@ object Helpers {
     def headResult() = Await.result(observable.head(), Duration(10, TimeUnit.SECONDS))
 
     def printResults(initial: String = ""): Unit = {
-      if (initial.length > 0)
+      if (initial.nonEmpty)
         print(initial)
       results().foreach(res => println(converter(res)))
     }
