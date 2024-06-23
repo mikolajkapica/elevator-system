@@ -2,29 +2,26 @@ import akka.actor.typed.ActorSystem
 import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.Http
 
-import scala.concurrent.ExecutionContextExecutor
-import scala.io.StdIn
+import scala.concurrent.Await
+import scala.concurrent.Promise
+import scala.concurrent.duration.Duration
 
 object Server {
 
-  def run(): Unit =
-    implicit val system: ActorSystem[Any] = ActorSystem(Behaviors.empty, "my-system")
-    implicit val executionContext: ExecutionContextExecutor = system.executionContext
+  def run() =
+    implicit val system = ActorSystem(Behaviors.empty, "api")
+    implicit val executionContext = system.executionContext
 
     val host = "0.0.0.0"
     val port = 8080
 
     val bindingFuture = Http()
       .newServerAt(host, port)
-      .bind(Routes.route)
+      .bind(Router.route)
 
-    println(s"Server online at http://$host:$port/\nPress RETURN to stop...")
+    println(s"Server online at http://$host:$port/")
 
-    Database.test()
-
-    StdIn.readLine()
-    bindingFuture
-      .flatMap(_.unbind())
-      .onComplete(_ => system.terminate())
+    val keepAlive = Promise[Unit].future
+    Await.result(keepAlive, Duration.Inf)
 
 }
