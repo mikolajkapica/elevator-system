@@ -14,6 +14,7 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
     "com.typesafe.akka" %% "akka-http" % "10.6.3",
     "org.slf4j" % "slf4j-simple" % "2.0.13",
+    "com.github.nscala-time" %% "nscala-time" % "2.32.0",
   )
 }
 libraryDependencies += ("org.mongodb.scala" %% "mongo-scala-driver" % "5.1.0").cross(
