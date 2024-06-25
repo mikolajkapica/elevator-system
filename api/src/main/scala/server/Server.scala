@@ -6,8 +6,11 @@ import akka.http.scaladsl.Http
 import settings.Settings
 import system.Simulation
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.Promise
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.Duration
 
 object Server {
 
@@ -38,5 +41,8 @@ object Server {
           }
       }
     }
+
+    val keepAlive = Promise[Unit].future
+    Await.result(keepAlive, Duration.Inf)
 
 }
