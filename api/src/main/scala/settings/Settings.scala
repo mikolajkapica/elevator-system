@@ -9,6 +9,6 @@ object Settings {
   val FLOORS = 10
   val MAX_PICKUP_REQUESTS_IN_QUANT = 10
   val DEFAULT_SCHEDULER = PriorityScheduler.findBestCab
-  val RUN_SIMULATION = true
+  val RUN_SIMULATION = false
   val IS_DB_ENABLED = true
 }
