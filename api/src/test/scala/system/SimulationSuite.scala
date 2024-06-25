@@ -1,7 +1,8 @@
 package system
 
 import org.scalatest.funsuite.AnyFunSuite
-import server.Schemas.{DropRequest, PickupRequest}
+import server.Schemas.DropRequest
+import server.Schemas.PickupRequest
 
 import scala.collection.immutable.HashMap
 import scala.util.Random

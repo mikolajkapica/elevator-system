@@ -15,10 +15,17 @@ object PriorityScheduler {
           cab.direction == Direction.Idle ||
           cab.direction == Direction.MovingUp && request.direction > 0 && cab.currentFloor <= request.fromFloor ||
           cab.direction == Direction.MovingDown && request.direction < 0 && cab.currentFloor >= request.fromFloor
-        )
-          0
+        ) 0
         else
-          Int.MaxValue
+          val requestThatCanChangeDirection = cab
+            .dropRequests
+            .minBy(r =>
+              if (request.direction > 0)
+                r.targetFloor
+              else
+                -r.targetFloor
+            )
+          Math.abs(request.fromFloor - requestThatCanChangeDirection.targetFloor) * 2
       val requestsSizeScore = cab.dropRequests.size * .5
       (cab, distanceScore + directionScore + requestsSizeScore)
     }
@@ -28,13 +35,3 @@ object PriorityScheduler {
   }
 
 }
-
-//          val requestThatCanChangeDirection = cab
-//            .dropRequests
-//            .minBy(r =>
-//              if (request.direction > 0)
-//                r.targetFloor
-//              else
-//                -r.targetFloor
-//            )
-//          Math.abs(request.fromFloor - requestThatCanChangeDirection.targetFloor)
