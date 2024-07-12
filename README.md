@@ -46,27 +46,27 @@ Make sure you have Docker installed on your machine. You can download and instal
 
 1. **Clone the repository:**
 
-```bash
-git clone https://github.com/mikolajkapica/elevator-system.git
-cd elevator-system
+```console
+$ git clone https://github.com/mikolajkapica/elevator-system.git
+$ cd elevator-system
 ```
    
 Build the Docker image:
 
    
-```bash
-docker build -t elevator-system .
+```console
+$ docker build -t elevator-system .
 ```
 
 This command builds a Docker image named elevator-system based on the Dockerfile in the project directory.
 
 Run the Docker container:
 
-```bash
-docker run -it elevator-system
+```console
+$ docker run -it elevator-system
+```
 This command starts the application inside a Docker container. The -it flag ensures an interactive terminal session.
 You can also use docker compose to run the application.
-```
 
 ## License
 This project is licensed under the GPL-3.0 License. See the LICENSE file for more details.
